@@ -1,11 +1,9 @@
 {
   "info": {
     "_postman_id": "02375ee3-8586-4c4e-a5af-7a55ba09bd60",
-    "name": "HW3",
-    "description": "Оптимізована Data Driven Postman collection для qauto та qauto2. Один файл iteration data містить кейси для обох середовищ. baseUrl береться з pm.iterationData, тому колекція послідовно проходить qauto, а потім qauto2 в межах одного Run manually.",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "25724350",
-    "_collection_link": "https://go.postman.co/collection/25724350-02375ee3-8586-4c4e-a5af-7a55ba09bd60?source=collection_link"
+    "name": "HW4",
+    "description": "Refactored Postman collection with central Pre-request filtering and helper scripts.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
@@ -15,43 +13,31 @@
           "listen": "prerequest",
           "script": {
             "exec": [
-              "const data = pm.iterationData.toObject();",
+              "if (!pm.execution.isMainRun) {",
+              "    const data = pm.iterationData.toObject();",
+              "    pm.variables.set(\"testName\", pm.helpers.getParam(\"name\"));",
+              "    pm.variables.set(\"testLastName\", pm.helpers.getParam(\"lastName\"));",
               "",
-              "if (data.type !== \"register\") {",
-              "    pm.execution.skipRequest();",
-              "}",
+              "    let rawEmail = pm.helpers.getParam(\"email\");",
+              "    let emailToSend = (rawEmail && rawEmail.trim() !== \"\") ",
+              "        ? rawEmail ",
+              "        : `auto_user_${pm.info.iteration}_${Date.now()}@test.com`;",
               "",
-              "const value = (key, fallback = \"\") =>",
-              "    Object.prototype.hasOwnProperty.call(data, key) ? data[key] : fallback;",
+              "    pm.variables.set(\"testEmail\", emailToSend);",
+              "    pm.variables.set(\"testPassword\", pm.helpers.getParam(\"password\"));",
+              "    pm.variables.set(\"testRepeatPassword\", pm.helpers.getParam(\"repeatPassword\"));",
               "",
-              "pm.variables.set(\"baseUrl\", value(\"baseUrl\", pm.environment.get(\"baseUrl\") || \"\"));",
-              "pm.variables.set(\"testName\", value(\"name\"));",
-              "pm.variables.set(\"testLastName\", value(\"lastName\"));",
-              "",
-              "",
-              "let rawEmail = value(\"email\");",
-              "let emailToSend = (rawEmail && rawEmail.trim() !== \"\") ",
-              "    ? rawEmail ",
-              "    : `auto_user_${pm.info.iteration}_${Date.now()}@test.com`;",
-              "",
-              "pm.variables.set(\"testEmail\", emailToSend);",
-              "",
-              "pm.variables.set(\"testPassword\", value(\"password\"));",
-              "pm.variables.set(\"testRepeatPassword\", value(\"repeatPassword\"));",
-              "",
-              "const expectedStatus = Number(value(\"expectedStatus\", 201));",
-              "pm.variables.set(\"expectedStatus\", Number.isFinite(expectedStatus) ? expectedStatus : 201);"
+              "    const expectedStatus = Number(pm.helpers.getParam(\"expectedStatus\", 201));",
+              "    pm.variables.set(\"expectedStatus\", Number.isFinite(expectedStatus) ? expectedStatus : 201);",
+              "}"
             ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
+            "type": "text/javascript"
           }
         },
         {
           "listen": "test",
           "script": {
             "exec": [
-              "",
               "let jsonData = {};",
               "try {",
               "    jsonData = pm.response.json();",
@@ -77,38 +63,24 @@
               "    });",
               "}"
             ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
+            "type": "text/javascript"
           }
         }
       ],
       "request": {
         "method": "POST",
         "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
+          { "key": "Content-Type", "value": "application/json" }
         ],
         "body": {
           "mode": "raw",
           "raw": "{\n  \"name\": \"{{testName}}\",\n  \"lastName\": \"{{testLastName}}\",\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\",\n  \"repeatPassword\": \"{{testRepeatPassword}}\"\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
+          "options": { "raw": { "language": "json" } }
         },
         "url": {
           "raw": "{{baseUrl}}/auth/signup",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "auth",
-            "signup"
-          ]
+          "host": [ "{{baseUrl}}" ],
+          "path": [ "auth", "signup" ]
         }
       },
       "response": []
@@ -120,24 +92,16 @@
           "listen": "prerequest",
           "script": {
             "exec": [
-              "const data = pm.iterationData.toObject();",
+              "if (!pm.execution.isMainRun) {",
+              "    pm.variables.set(\"profileName\", pm.helpers.getParam(\"name\", \"John\"));",
+              "    pm.variables.set(\"profileLastName\", pm.helpers.getParam(\"lastName\", \"Smith\"));",
+              "    pm.variables.set(\"profileCountry\", pm.helpers.getParam(\"country\", \"Ukraine\"));",
+              "    pm.variables.set(\"profileDateBirth\", pm.helpers.getParam(\"dateBirth\", \"1995-05-15\"));",
+              "    pm.variables.set(\"profilePhoto\", pm.helpers.getParam(\"photo\", \"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=\"));",
               "",
-              "if (data.type !== \"profile\") {",
-              "    pm.execution.skipRequest();",
-              "}",
-              "",
-              "const value = (key, fallback = \"\") =>",
-              "    Object.prototype.hasOwnProperty.call(data, key) ? data[key] : fallback;",
-              "",
-              "pm.variables.set(\"baseUrl\", value(\"baseUrl\", pm.environment.get(\"baseUrl\") || \"\"));",
-              "pm.variables.set(\"profileName\", value(\"name\", \"John\"));",
-              "pm.variables.set(\"profileLastName\", value(\"lastName\", \"Smith\"));",
-              "pm.variables.set(\"profileCountry\", value(\"country\", \"Ukraine\"));",
-              "pm.variables.set(\"profileDateBirth\", value(\"dateBirth\", \"1995-05-15\"));",
-              "pm.variables.set(\"profilePhoto\", value(\"photo\", \"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=\"));",
-              "",
-              "const expectedStatus = Number(value(\"expectedStatus\", 200));",
-              "pm.variables.set(\"expectedStatus\", Number.isFinite(expectedStatus) ? expectedStatus : 200);"
+              "    const expectedStatus = Number(pm.helpers.getParam(\"expectedStatus\", 200));",
+              "    pm.variables.set(\"expectedStatus\", Number.isFinite(expectedStatus) ? expectedStatus : 200);",
+              "}"
             ],
             "type": "text/javascript"
           }
@@ -146,14 +110,6 @@
           "listen": "test",
           "script": {
             "exec": [
-              "",
-              "let jsonData = {};",
-              "try {",
-              "    jsonData = pm.response.json();",
-              "} catch (e) {",
-              "    console.log(\"Response is not valid JSON or is empty\");",
-              "}",
-              "",
               "let jsonData = {};",
               "try {",
               "    jsonData = pm.response.json();",
@@ -180,16 +136,16 @@
               "    const sentDateBirth = pm.variables.get(\"profileDateBirth\");",
               "",
               "    pm.test(`[${testCase}] response matches input`, function () {",
-              "        if (jsonData.data.name !== undefined) {",
+              "        if (jsonData.data && jsonData.data.name !== undefined) {",
               "            pm.expect(jsonData.data.name).to.eql(sentName);",
               "        }",
-              "        if (jsonData.data.lastName !== undefined) {",
+              "        if (jsonData.data && jsonData.data.lastName !== undefined) {",
               "            pm.expect(jsonData.data.lastName).to.eql(sentLastName);",
               "        }",
-              "        if (jsonData.data.country !== undefined) {",
+              "        if (jsonData.data && jsonData.data.country !== undefined) {",
               "            pm.expect(jsonData.data.country).to.eql(sentCountry);",
               "        }",
-              "        if (jsonData.data.dateBirth !== undefined) {",
+              "        if (jsonData.data && jsonData.data.dateBirth !== undefined) {",
               "            const actualDate = String(jsonData.data.dateBirth).split(\"T\")[0];",
               "            pm.expect(actualDate).to.eql(sentDateBirth);",
               "        }",
@@ -207,29 +163,17 @@
       "request": {
         "method": "PUT",
         "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
+          { "key": "Content-Type", "value": "application/json" }
         ],
         "body": {
           "mode": "raw",
           "raw": "{\n  \"photo\": \"{{profilePhoto}}\",\n  \"name\": \"{{profileName}}\",\n  \"lastName\": \"{{profileLastName}}\",\n  \"dateBirth\": \"{{profileDateBirth}}\",\n  \"country\": \"{{profileCountry}}\"\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
+          "options": { "raw": { "language": "json" } }
         },
         "url": {
           "raw": "{{baseUrl}}/users/profile",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "users",
-            "profile"
-          ]
+          "host": [ "{{baseUrl}}" ],
+          "path": [ "users", "profile" ]
         }
       },
       "response": []
@@ -240,43 +184,46 @@
       "listen": "prerequest",
       "script": {
         "type": "text/javascript",
-        "requests": {},
         "exec": [
+          "// 1. Инициализация общих хелперов (DRY)",
+          "const data = pm.iterationData.toObject();",
+          "pm.helpers = {",
+          "    getParam: (key, fallback = \"\") => Object.prototype.hasOwnProperty.call(data, key) ? data[key] : fallback,",
+          "    getRandomItem: (arr) => arr[Math.floor(Math.random() * arr.length)],",
+          "    getRandomName: () => pm.helpers.getRandomItem([\"Alexander\", \"Dmitry\", \"Maxim\", \"Artem\", \"Ivan\", \"Sophia\", \"Anna\"]),",
+          "    getRandomLastName: () => pm.helpers.getRandomItem([\"Melnyk\", \"Shevchenko\", \"Boyko\", \"Kovalenko\", \"Bondarenko\"])\n",
+          "};",
+          "",
+          "// 2. Установка baseUrl",
           "const iterationBaseUrl = pm.iterationData.get(\"baseUrl\");",
           "if (iterationBaseUrl) {",
           "    pm.variables.set(\"baseUrl\", iterationBaseUrl);",
+          "}",
+          "",
+          "// 3. Централизованная фильтрация итераций по типам (main / register / profile)",
+          "const requestName = pm.info.requestName;",
+          "const currentType = data.type || \"main\";",
+          "",
+          "let shouldExecute = false;",
+          "if (currentType === \"register\" && requestName === \"register validation\") {",
+          "    shouldExecute = true;",
+          "} else if (currentType === \"profile\" && requestName === \"profile validation\") {",
+          "    shouldExecute = true;",
+          "} else if (currentType === \"main\" && requestName !== \"register validation\" && requestName !== \"profile validation\") {",
+          "    shouldExecute = true;",
+          "}",
+          "",
+          "if (!shouldExecute) {",
+          "    pm.execution.skipRequest();",
           "}"
-        ]
-      }
-    },
-    {
-      "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "packages": {},
-        "requests": {},
-        "exec": [
-          ""
         ]
       }
     }
   ],
   "variable": [
-    {
-      "key": "baseUrl",
-      "value": ""
-    },
-    {
-      "key": "userId",
-      "value": ""
-    },
-    {
-      "key": "authToken",
-      "value": ""
-    },
-    {
-      "key": "carId",
-      "value": ""
-    }
+    { "key": "baseUrl", "value": "" },
+    { "key": "userId", "value": "" },
+    { "key": "authToken", "value": "" },
+    { "key": "carId", "value": "" }
   ]
 }
