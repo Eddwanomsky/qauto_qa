@@ -1,14 +1,121 @@
 {
   "info": {
-    "_postman_id": "6dea60b8-0292-433e-9f7c-b74d4501a270",
+    "_postman_id": "8230a3e6-4db4-4e3a-8a64-73ef9c086b31",
     "name": "HW3",
     "description": "Оптимізована Data Driven Postman collection для qauto та qauto2.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "25724350"
+    "_exporter_id": "25724350",
+    "_collection_link": "https://go.postman.co/collection/25724350-8230a3e6-4db4-4e3a-8a64-73ef9c086b31?source=collection_link"
   },
   "item": [
     {
       "name": "Validation",
+      "item": [
+        {
+          "name": "register validation",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var data = pm.iterationData.toObject();\n\n// Пропуск запроса, если тип не 'register'\nif (data.type && data.type !== 'register') {\n    pm.execution.skipRequest();\n}\n\n// Проверяем наличие pm.helpers перед вызовом\nvar getValue = (pm.helpers && pm.helpers.getValue) \n    ? pm.helpers.getValue \n    : function(obj, key, def) { return (obj && obj[key] !== undefined) ? obj[key] : def; };\n\npm.variables.set('baseUrl', getValue(data, 'baseUrl', pm.environment.get('baseUrl') || ''));\npm.variables.set('testName', getValue(data, 'name', ''));\npm.variables.set('testLastName', getValue(data, 'lastName', ''));\n\nvar rawEmail = getValue(data, 'email', '');\nvar emailToSend = (rawEmail && String(rawEmail).trim() !== '') \n    ? rawEmail \n    : `auto_user_${pm.info.iteration}_${Date.now()}@test.com`;\n\npm.variables.set('testEmail', emailToSend);\npm.variables.set('testPassword', getValue(data, 'password', ''));\npm.variables.set('testRepeatPassword', getValue(data, 'repeatPassword', ''));\n\nvar expStatus = Number(getValue(data, 'expectedStatus', 201));\npm.variables.set('expectedStatus', Number.isFinite(expStatus) ? expStatus : 201);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let jsonData = pm.helpers.parseJson(pm.response.text());\nconst expectedStatus = Number(pm.variables.get('expectedStatus'));\nconst testCase = pm.iterationData.get('case') || `iteration ${pm.info.iteration + 1}`;\n\npm.test(`[${testCase}] expected status`, function () {\n    if (Number.isNaN(expectedStatus)) {\n        pm.expect(pm.response.code).to.be.within(400, 499);\n    } else {\n        pm.expect(pm.response.code).to.eql(expectedStatus);\n    }\n});\n\nif (expectedStatus >= 200 && expectedStatus < 300) {\n    pm.test(`[${testCase}] successful registration`, function () {\n        pm.expect(jsonData.status).to.eql('ok');\n        pm.expect(jsonData.data).to.be.an('object');\n    });\n} else {\n    pm.test(`[${testCase}] validation error response`, function () {\n        pm.expect(pm.response.code).to.be.within(400, 499);\n    });\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"{{testName}}\",\n  \"lastName\": \"{{testLastName}}\",\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\",\n  \"repeatPassword\": \"{{testRepeatPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/signup",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "signup"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "profile validation",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var data = pm.iterationData.toObject();\n\n// Пропуск запроса, если тип не 'profile'\nif (data.type && data.type !== 'profile') {\n    pm.execution.skipRequest();\n}\n\nvar getValue = (pm.helpers && pm.helpers.getValue) \n    ? pm.helpers.getValue \n    : function(obj, key, def) { return (obj && obj[key] !== undefined) ? obj[key] : def; };\n\nvar defaultPhoto = (pm.helpers && pm.helpers.defaultPhoto) ? pm.helpers.defaultPhoto : '';\n\npm.variables.set('baseUrl', getValue(data, 'baseUrl', pm.environment.get('baseUrl') || ''));\npm.variables.set('profileName', getValue(data, 'name', 'John'));\npm.variables.set('profileLastName', getValue(data, 'lastName', 'Smith'));\npm.variables.set('profileCountry', getValue(data, 'country', 'Ukraine'));\npm.variables.set('profileDateBirth', getValue(data, 'dateBirth', '1995-05-15'));\npm.variables.set('profilePhoto', getValue(data, 'photo', defaultPhoto));\n\nvar expStatus = Number(getValue(data, 'expectedStatus', 200));\npm.variables.set('expectedStatus', Number.isFinite(expStatus) ? expStatus : 200);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let jsonData = pm.helpers.parseJson(pm.response.text());\nconst expectedStatus = Number(pm.variables.get('expectedStatus'));\nconst testCase = pm.iterationData.get('case') || `iteration ${pm.info.iteration + 1}`;\n\npm.test(`[${testCase}] expected status`, function () {\n    if (Number.isNaN(expectedStatus)) {\n        pm.expect(pm.response.code).to.be.within(400, 499);\n    } else {\n        pm.expect(pm.response.code).to.eql(expectedStatus);\n    }\n});\n\nif (expectedStatus >= 200 && expectedStatus < 300) {\n    pm.test(`[${testCase}] profile updated`, function () {\n        pm.expect(jsonData.status).to.eql('ok');\n        pm.expect(jsonData.data).to.be.an('object');\n    });\n\n    pm.test(`[${testCase}] response matches input`, function () {\n        if (jsonData.data && jsonData.data.name !== undefined) {\n            pm.expect(jsonData.data.name).to.eql(pm.variables.get('profileName'));\n        }\n        if (jsonData.data && jsonData.data.lastName !== undefined) {\n            pm.expect(jsonData.data.lastName).to.eql(pm.variables.get('profileLastName'));\n        }\n        if (jsonData.data && jsonData.data.country !== undefined) {\n            pm.expect(jsonData.data.country).to.eql(pm.variables.get('profileCountry'));\n        }\n        if (jsonData.data && jsonData.data.dateBirth !== undefined) {\n            const actualDate = String(jsonData.data.dateBirth).split('T')[0];\n            pm.expect(actualDate).to.eql(pm.variables.get('profileDateBirth'));\n        }\n    });\n} else {\n    pm.test(`[${testCase}] validation error response`, function () {\n        pm.expect(pm.response.code).to.be.within(400, 499);\n    });\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"photo\": \"{{profilePhoto}}\",\n  \"name\": \"{{profileName}}\",\n  \"lastName\": \"{{profileLastName}}\",\n  \"dateBirth\": \"{{profileDateBirth}}\",\n  \"country\": \"{{profileCountry}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "profile"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
       "event": [
         {
           "listen": "prerequest",
@@ -22,196 +129,10 @@
             "type": "text/javascript"
           }
         }
-      ],
-      "item": [
-        {
-          "name": "register validation",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  "const data = pm.iterationData.toObject();",
-                  "if (data.type && data.type !== 'register') {",
-                  "    pm.execution.skipRequest();",
-                  "}",
-                  "",
-                  "pm.variables.set('baseUrl', pm.helpers.getValue(data, 'baseUrl', pm.environment.get('baseUrl') || ''));",
-                  "pm.variables.set('testName', pm.helpers.getValue(data, 'name'));",
-                  "pm.variables.set('testLastName', pm.helpers.getValue(data, 'lastName'));",
-                  "",
-                  "let rawEmail = pm.helpers.getValue(data, 'email');",
-                  "let emailToSend = (rawEmail && rawEmail.trim() !== '') ",
-                  "    ? rawEmail ",
-                  "    : `auto_user_${pm.info.iteration}_${Date.now()}@test.com`;",
-                  "",
-                  "pm.variables.set('testEmail', emailToSend);",
-                  "pm.variables.set('testPassword', pm.helpers.getValue(data, 'password'));",
-                  "pm.variables.set('testRepeatPassword', pm.helpers.getValue(data, 'repeatPassword'));",
-                  "",
-                  "const expectedStatus = Number(pm.helpers.getValue(data, 'expectedStatus', 201));",
-                  "pm.variables.set('expectedStatus', Number.isFinite(expectedStatus) ? expectedStatus : 201);"
-                ],
-                "type": "text/javascript"
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "let jsonData = pm.helpers.parseJson(pm.response.text());",
-                  "const expectedStatus = Number(pm.variables.get('expectedStatus'));",
-                  "const testCase = pm.iterationData.get('case') || `iteration ${pm.info.iteration + 1}`;",
-                  "",
-                  "pm.test(`[${testCase}] expected status`, function () {",
-                  "    if (Number.isNaN(expectedStatus)) {",
-                  "        pm.expect(pm.response.code).to.be.within(400, 499);",
-                  "    } else {",
-                  "        pm.expect(pm.response.code).to.eql(expectedStatus);",
-                  "    }",
-                  "});",
-                  "",
-                  "if (expectedStatus >= 200 && expectedStatus < 300) {",
-                  "    pm.test(`[${testCase}] successful registration`, function () {",
-                  "        pm.expect(jsonData.status).to.eql('ok');",
-                  "        pm.expect(jsonData.data).to.be.an('object');",
-                  "    });",
-                  "} else {",
-                  "    pm.test(`[${testCase}] validation error response`, function () {",
-                  "        pm.expect(pm.response.code).to.be.within(400, 499);",
-                  "    });",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"{{testName}}\",\n  \"lastName\": \"{{testLastName}}\",\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\",\n  \"repeatPassword\": \"{{testRepeatPassword}}\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/signup",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "signup"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "profile validation",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  "const data = pm.iterationData.toObject();",
-                  "if (data.type && data.type !== 'profile') {",
-                  "    pm.execution.skipRequest();",
-                  "}",
-                  "",
-                  "pm.variables.set('baseUrl', pm.helpers.getValue(data, 'baseUrl', pm.environment.get('baseUrl') || ''));",
-                  "pm.variables.set('profileName', pm.helpers.getValue(data, 'name', 'John'));",
-                  "pm.variables.set('profileLastName', pm.helpers.getValue(data, 'lastName', 'Smith'));",
-                  "pm.variables.set('profileCountry', pm.helpers.getValue(data, 'country', 'Ukraine'));",
-                  "pm.variables.set('profileDateBirth', pm.helpers.getValue(data, 'dateBirth', '1995-05-15'));",
-                  "pm.variables.set('profilePhoto', pm.helpers.getValue(data, 'photo', pm.helpers.defaultPhoto));",
-                  "",
-                  "const expectedStatus = Number(pm.helpers.getValue(data, 'expectedStatus', 200));",
-                  "pm.variables.set('expectedStatus', Number.isFinite(expectedStatus) ? expectedStatus : 200);"
-                ],
-                "type": "text/javascript"
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "let jsonData = pm.helpers.parseJson(pm.response.text());",
-                  "const expectedStatus = Number(pm.variables.get('expectedStatus'));",
-                  "const testCase = pm.iterationData.get('case') || `iteration ${pm.info.iteration + 1}`;",
-                  "",
-                  "pm.test(`[${testCase}] expected status`, function () {",
-                  "    if (Number.isNaN(expectedStatus)) {",
-                  "        pm.expect(pm.response.code).to.be.within(400, 499);",
-                  "    } else {",
-                  "        pm.expect(pm.response.code).to.eql(expectedStatus);",
-                  "    }",
-                  "});",
-                  "",
-                  "if (expectedStatus >= 200 && expectedStatus < 300) {",
-                  "    pm.test(`[${testCase}] profile updated`, function () {",
-                  "        pm.expect(jsonData.status).to.eql('ok');",
-                  "        pm.expect(jsonData.data).to.be.an('object');",
-                  "    });",
-                  "",
-                  "    pm.test(`[${testCase}] response matches input`, function () {",
-                  "        if (jsonData.data && jsonData.data.name !== undefined) {",
-                  "            pm.expect(jsonData.data.name).to.eql(pm.variables.get('profileName'));",
-                  "        }",
-                  "        if (jsonData.data && jsonData.data.lastName !== undefined) {",
-                  "            pm.expect(jsonData.data.lastName).to.eql(pm.variables.get('profileLastName'));",
-                  "        }",
-                  "        if (jsonData.data && jsonData.data.country !== undefined) {",
-                  "            pm.expect(jsonData.data.country).to.eql(pm.variables.get('profileCountry'));",
-                  "        }",
-                  "        if (jsonData.data && jsonData.data.dateBirth !== undefined) {",
-                  "            const actualDate = String(jsonData.data.dateBirth).split('T')[0];",
-                  "            pm.expect(actualDate).to.eql(pm.variables.get('profileDateBirth'));",
-                  "        }",
-                  "    });",
-                  "} else {",
-                  "    pm.test(`[${testCase}] validation error response`, function () {",
-                  "        pm.expect(pm.response.code).to.be.within(400, 499);",
-                  "    });",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "PUT",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"photo\": \"{{profilePhoto}}\",\n  \"name\": \"{{profileName}}\",\n  \"lastName\": \"{{profileLastName}}\",\n  \"dateBirth\": \"{{profileDateBirth}}\",\n  \"country\": \"{{profileCountry}}\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/users/profile",
-              "host": ["{{baseUrl}}"],
-              "path": ["users", "profile"]
-            }
-          },
-          "response": []
-        }
       ]
     },
     {
       "name": "Main Flow",
-      "event": [
-        {
-          "listen": "prerequest",
-          "script": {
-            "exec": [
-              "const data = pm.iterationData.toObject();",
-              "if (data.type && data.type !== 'main') {",
-              "    pm.execution.skipRequest();",
-              "}"
-            ],
-            "type": "text/javascript"
-          }
-        }
-      ],
       "item": [
         {
           "name": "register",
@@ -257,17 +178,29 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"{{dynamicName}}\",\n  \"lastName\": \"{{dynamicLastName}}\",\n  \"email\": \"{{dynamicEmail}}\",\n  \"password\": \"{{password}}\",\n  \"repeatPassword\": \"{{password}}\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{baseUrl}}/auth/signup",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "signup"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "signup"
+              ]
             }
           },
           "response": []
@@ -323,17 +256,29 @@
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"photo\": \"{{dynamicPhoto}}\",\n  \"name\": \"{{dynamicName}}\",\n  \"lastName\": \"{{dynamicLastName}}\",\n  \"dateBirth\": \"{{dynamicDateBirth}}\",\n  \"country\": \"{{dynamicCountry}}\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{baseUrl}}/users/profile",
-              "host": ["{{baseUrl}}"],
-              "path": ["users", "profile"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "profile"
+              ]
             }
           },
           "response": []
@@ -382,12 +327,21 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"oldPassword\": \"{{oldPassword}}\",\n  \"password\": \"{{password}}\",\n  \"repeatPassword\": \"{{password}}\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{baseUrl}}/users/password",
-              "host": ["{{baseUrl}}"],
-              "path": ["users", "password"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "password"
+              ]
             }
           },
           "response": []
@@ -416,8 +370,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/auth/logout",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "logout"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
             }
           },
           "response": []
@@ -451,12 +410,21 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"{{dynamicEmail}}\",\n  \"password\": \"{{password}}\",\n  \"remember\": false\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{baseUrl}}/auth/signin",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "signin"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "signin"
+              ]
             }
           },
           "response": []
@@ -488,12 +456,20 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"carBrandId\": 1,\n  \"carModelId\": 2,\n  \"mileage\": 122\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{baseUrl}}/cars",
-              "host": ["{{baseUrl}}"],
-              "path": ["cars"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cars"
+              ]
             }
           },
           "response": []
@@ -538,12 +514,20 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"carId\": {{carId}},\n  \"reportedAt\": \"{{expenseDate}}\",\n  \"mileage\": {{currentMileage}},\n  \"liters\": {{expenseLiters}},\n  \"totalCost\": {{expenseTotalCost}},\n  \"forceMileage\": false\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{baseUrl}}/expenses",
-              "host": ["{{baseUrl}}"],
-              "path": ["expenses"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "expenses"
+              ]
             }
           },
           "response": []
@@ -572,11 +556,29 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/users",
-              "host": ["{{baseUrl}}"],
-              "path": ["users"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users"
+              ]
             }
           },
           "response": []
+        }
+      ],
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const data = pm.iterationData.toObject();",
+              "if (data.type && data.type !== 'main') {",
+              "    pm.execution.skipRequest();",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
         }
       ]
     }
@@ -606,9 +608,21 @@
     }
   ],
   "variable": [
-    { "key": "baseUrl", "value": "" },
-    { "key": "userId", "value": "" },
-    { "key": "authToken", "value": "" },
-    { "key": "carId", "value": "" }
+    {
+      "key": "baseUrl",
+      "value": ""
+    },
+    {
+      "key": "userId",
+      "value": ""
+    },
+    {
+      "key": "authToken",
+      "value": ""
+    },
+    {
+      "key": "carId",
+      "value": ""
+    }
   ]
 }
