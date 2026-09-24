@@ -1,0 +1,282 @@
+{
+  "info": {
+    "_postman_id": "02375ee3-8586-4c4e-a5af-7a55ba09bd60",
+    "name": "HW3",
+    "description": "Оптимізована Data Driven Postman collection для qauto та qauto2. Один файл iteration data містить кейси для обох середовищ. baseUrl береться з pm.iterationData, тому колекція послідовно проходить qauto, а потім qauto2 в межах одного Run manually.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "25724350",
+    "_collection_link": "https://go.postman.co/collection/25724350-02375ee3-8586-4c4e-a5af-7a55ba09bd60?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "register validation",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const data = pm.iterationData.toObject();",
+              "",
+              "if (data.type !== \"register\") {",
+              "    pm.execution.skipRequest();",
+              "}",
+              "",
+              "const value = (key, fallback = \"\") =>",
+              "    Object.prototype.hasOwnProperty.call(data, key) ? data[key] : fallback;",
+              "",
+              "pm.variables.set(\"baseUrl\", value(\"baseUrl\", pm.environment.get(\"baseUrl\") || \"\"));",
+              "pm.variables.set(\"testName\", value(\"name\"));",
+              "pm.variables.set(\"testLastName\", value(\"lastName\"));",
+              "",
+              "",
+              "let rawEmail = value(\"email\");",
+              "let emailToSend = (rawEmail && rawEmail.trim() !== \"\") ",
+              "    ? rawEmail ",
+              "    : `auto_user_${pm.info.iteration}_${Date.now()}@test.com`;",
+              "",
+              "pm.variables.set(\"testEmail\", emailToSend);",
+              "",
+              "pm.variables.set(\"testPassword\", value(\"password\"));",
+              "pm.variables.set(\"testRepeatPassword\", value(\"repeatPassword\"));",
+              "",
+              "const expectedStatus = Number(value(\"expectedStatus\", 201));",
+              "pm.variables.set(\"expectedStatus\", Number.isFinite(expectedStatus) ? expectedStatus : 201);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "",
+              "let jsonData = {};",
+              "try {",
+              "    jsonData = pm.response.json();",
+              "} catch (e) {",
+              "    console.log(\"Response is not valid JSON or is empty\");",
+              "}",
+              "",
+              "const expectedStatus = Number(pm.variables.get(\"expectedStatus\"));",
+              "const testCase = pm.iterationData.get(\"case\") || `iteration ${pm.info.iteration + 1}`;",
+              "",
+              "pm.test(`[${testCase}] expected status`, function () {",
+              "    pm.expect(pm.response.code).to.eql(expectedStatus);",
+              "});",
+              "",
+              "if (expectedStatus >= 200 && expectedStatus < 300) {",
+              "    pm.test(`[${testCase}] successful registration`, function () {",
+              "        pm.expect(jsonData.status).to.eql(\"ok\");",
+              "        pm.expect(jsonData.data).to.be.an(\"object\");",
+              "    });",
+              "} else {",
+              "    pm.test(`[${testCase}] validation error response`, function () {",
+              "        pm.expect(pm.response.code).to.be.within(400, 499);",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"{{testName}}\",\n  \"lastName\": \"{{testLastName}}\",\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\",\n  \"repeatPassword\": \"{{testRepeatPassword}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/signup",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "signup"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "profile validation",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const data = pm.iterationData.toObject();",
+              "",
+              "if (data.type !== \"profile\") {",
+              "    pm.execution.skipRequest();",
+              "}",
+              "",
+              "const value = (key, fallback = \"\") =>",
+              "    Object.prototype.hasOwnProperty.call(data, key) ? data[key] : fallback;",
+              "",
+              "pm.variables.set(\"baseUrl\", value(\"baseUrl\", pm.environment.get(\"baseUrl\") || \"\"));",
+              "pm.variables.set(\"profileName\", value(\"name\", \"John\"));",
+              "pm.variables.set(\"profileLastName\", value(\"lastName\", \"Smith\"));",
+              "pm.variables.set(\"profileCountry\", value(\"country\", \"Ukraine\"));",
+              "pm.variables.set(\"profileDateBirth\", value(\"dateBirth\", \"1995-05-15\"));",
+              "pm.variables.set(\"profilePhoto\", value(\"photo\", \"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=\"));",
+              "",
+              "const expectedStatus = Number(value(\"expectedStatus\", 200));",
+              "pm.variables.set(\"expectedStatus\", Number.isFinite(expectedStatus) ? expectedStatus : 200);"
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "",
+              "let jsonData = {};",
+              "try {",
+              "    jsonData = pm.response.json();",
+              "} catch (e) {",
+              "    console.log(\"Response is not valid JSON or is empty\");",
+              "}",
+              "",
+              "let jsonData = {};",
+              "try {",
+              "    jsonData = pm.response.json();",
+              "} catch (e) {",
+              "    console.log(\"Response is not valid JSON or is empty\");",
+              "}",
+              "",
+              "const expectedStatus = Number(pm.variables.get(\"expectedStatus\"));",
+              "const testCase = pm.iterationData.get(\"case\") || `iteration ${pm.info.iteration + 1}`;",
+              "",
+              "pm.test(`[${testCase}] expected status`, function () {",
+              "    pm.expect(pm.response.code).to.eql(expectedStatus);",
+              "});",
+              "",
+              "if (expectedStatus >= 200 && expectedStatus < 300) {",
+              "    pm.test(`[${testCase}] profile updated`, function () {",
+              "        pm.expect(jsonData.status).to.eql(\"ok\");",
+              "        pm.expect(jsonData.data).to.be.an(\"object\");",
+              "    });",
+              "",
+              "    const sentName = pm.variables.get(\"profileName\");",
+              "    const sentLastName = pm.variables.get(\"profileLastName\");",
+              "    const sentCountry = pm.variables.get(\"profileCountry\");",
+              "    const sentDateBirth = pm.variables.get(\"profileDateBirth\");",
+              "",
+              "    pm.test(`[${testCase}] response matches input`, function () {",
+              "        if (jsonData.data.name !== undefined) {",
+              "            pm.expect(jsonData.data.name).to.eql(sentName);",
+              "        }",
+              "        if (jsonData.data.lastName !== undefined) {",
+              "            pm.expect(jsonData.data.lastName).to.eql(sentLastName);",
+              "        }",
+              "        if (jsonData.data.country !== undefined) {",
+              "            pm.expect(jsonData.data.country).to.eql(sentCountry);",
+              "        }",
+              "        if (jsonData.data.dateBirth !== undefined) {",
+              "            const actualDate = String(jsonData.data.dateBirth).split(\"T\")[0];",
+              "            pm.expect(actualDate).to.eql(sentDateBirth);",
+              "        }",
+              "    });",
+              "} else {",
+              "    pm.test(`[${testCase}] validation error response`, function () {",
+              "        pm.expect(pm.response.code).to.be.within(400, 499);",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"photo\": \"{{profilePhoto}}\",\n  \"name\": \"{{profileName}}\",\n  \"lastName\": \"{{profileLastName}}\",\n  \"dateBirth\": \"{{profileDateBirth}}\",\n  \"country\": \"{{profileCountry}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users/profile",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "profile"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "requests": {},
+        "exec": [
+          "const iterationBaseUrl = pm.iterationData.get(\"baseUrl\");",
+          "if (iterationBaseUrl) {",
+          "    pm.variables.set(\"baseUrl\", iterationBaseUrl);",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": ""
+    },
+    {
+      "key": "userId",
+      "value": ""
+    },
+    {
+      "key": "authToken",
+      "value": ""
+    },
+    {
+      "key": "carId",
+      "value": ""
+    }
+  ]
+}
