@@ -1,8 +1,8 @@
 {
   "info": {
     "_postman_id": "02375ee3-8586-4c4e-a5af-7a55ba09bd60",
-    "name": "HW4",
-    "description": "Refactored Postman collection with central Pre-request filtering and helper scripts.",
+    "name": "HW4 - Registration Validation",
+    "description": "Data Driven Postman collection for registration validation on qauto and qauto2.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -13,23 +13,20 @@
           "listen": "prerequest",
           "script": {
             "exec": [
-              "if (!pm.execution.isMainRun) {",
-              "    const data = pm.iterationData.toObject();",
-              "    pm.variables.set(\"testName\", pm.helpers.getParam(\"name\"));",
-              "    pm.variables.set(\"testLastName\", pm.helpers.getParam(\"lastName\"));",
+              "pm.variables.set(\"testName\", pm.helpers.getParam(\"name\"));",
+              "pm.variables.set(\"testLastName\", pm.helpers.getParam(\"lastName\"));",
               "",
-              "    let rawEmail = pm.helpers.getParam(\"email\");",
-              "    let emailToSend = (rawEmail && rawEmail.trim() !== \"\") ",
-              "        ? rawEmail ",
-              "        : `auto_user_${pm.info.iteration}_${Date.now()}@test.com`;",
+              "let rawEmail = pm.helpers.getParam(\"email\");",
+              "let emailToSend = (rawEmail && rawEmail.trim() !== \"\") ",
+              "    ? rawEmail ",
+              "    : `auto_user_${pm.info.iteration}_${Date.now()}@test.com`;",
               "",
-              "    pm.variables.set(\"testEmail\", emailToSend);",
-              "    pm.variables.set(\"testPassword\", pm.helpers.getParam(\"password\"));",
-              "    pm.variables.set(\"testRepeatPassword\", pm.helpers.getParam(\"repeatPassword\"));",
+              "pm.variables.set(\"testEmail\", emailToSend);",
+              "pm.variables.set(\"testPassword\", pm.helpers.getParam(\"password\"));",
+              "pm.variables.set(\"testRepeatPassword\", pm.helpers.getParam(\"repeatPassword\"));",
               "",
-              "    const expectedStatus = Number(pm.helpers.getParam(\"expectedStatus\", 201));",
-              "    pm.variables.set(\"expectedStatus\", Number.isFinite(expectedStatus) ? expectedStatus : 201);",
-              "}"
+              "const expectedStatus = Number(pm.helpers.getParam(\"expectedStatus\", 201));",
+              "pm.variables.set(\"expectedStatus\", Number.isFinite(expectedStatus) ? expectedStatus : 201);"
             ],
             "type": "text/javascript"
           }
@@ -70,110 +67,29 @@
       "request": {
         "method": "POST",
         "header": [
-          { "key": "Content-Type", "value": "application/json" }
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
         ],
         "body": {
           "mode": "raw",
           "raw": "{\n  \"name\": \"{{testName}}\",\n  \"lastName\": \"{{testLastName}}\",\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\",\n  \"repeatPassword\": \"{{testRepeatPassword}}\"\n}",
-          "options": { "raw": { "language": "json" } }
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
         },
         "url": {
           "raw": "{{baseUrl}}/auth/signup",
-          "host": [ "{{baseUrl}}" ],
-          "path": [ "auth", "signup" ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "profile validation",
-      "event": [
-        {
-          "listen": "prerequest",
-          "script": {
-            "exec": [
-              "if (!pm.execution.isMainRun) {",
-              "    pm.variables.set(\"profileName\", pm.helpers.getParam(\"name\", \"John\"));",
-              "    pm.variables.set(\"profileLastName\", pm.helpers.getParam(\"lastName\", \"Smith\"));",
-              "    pm.variables.set(\"profileCountry\", pm.helpers.getParam(\"country\", \"Ukraine\"));",
-              "    pm.variables.set(\"profileDateBirth\", pm.helpers.getParam(\"dateBirth\", \"1995-05-15\"));",
-              "    pm.variables.set(\"profilePhoto\", pm.helpers.getParam(\"photo\", \"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=\"));",
-              "",
-              "    const expectedStatus = Number(pm.helpers.getParam(\"expectedStatus\", 200));",
-              "    pm.variables.set(\"expectedStatus\", Number.isFinite(expectedStatus) ? expectedStatus : 200);",
-              "}"
-            ],
-            "type": "text/javascript"
-          }
-        },
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "let jsonData = {};",
-              "try {",
-              "    jsonData = pm.response.json();",
-              "} catch (e) {",
-              "    console.log(\"Response is not valid JSON or is empty\");",
-              "}",
-              "",
-              "const expectedStatus = Number(pm.variables.get(\"expectedStatus\"));",
-              "const testCase = pm.iterationData.get(\"case\") || `iteration ${pm.info.iteration + 1}`;",
-              "",
-              "pm.test(`[${testCase}] expected status`, function () {",
-              "    pm.expect(pm.response.code).to.eql(expectedStatus);",
-              "});",
-              "",
-              "if (expectedStatus >= 200 && expectedStatus < 300) {",
-              "    pm.test(`[${testCase}] profile updated`, function () {",
-              "        pm.expect(jsonData.status).to.eql(\"ok\");",
-              "        pm.expect(jsonData.data).to.be.an(\"object\");",
-              "    });",
-              "",
-              "    const sentName = pm.variables.get(\"profileName\");",
-              "    const sentLastName = pm.variables.get(\"profileLastName\");",
-              "    const sentCountry = pm.variables.get(\"profileCountry\");",
-              "    const sentDateBirth = pm.variables.get(\"profileDateBirth\");",
-              "",
-              "    pm.test(`[${testCase}] response matches input`, function () {",
-              "        if (jsonData.data && jsonData.data.name !== undefined) {",
-              "            pm.expect(jsonData.data.name).to.eql(sentName);",
-              "        }",
-              "        if (jsonData.data && jsonData.data.lastName !== undefined) {",
-              "            pm.expect(jsonData.data.lastName).to.eql(sentLastName);",
-              "        }",
-              "        if (jsonData.data && jsonData.data.country !== undefined) {",
-              "            pm.expect(jsonData.data.country).to.eql(sentCountry);",
-              "        }",
-              "        if (jsonData.data && jsonData.data.dateBirth !== undefined) {",
-              "            const actualDate = String(jsonData.data.dateBirth).split(\"T\")[0];",
-              "            pm.expect(actualDate).to.eql(sentDateBirth);",
-              "        }",
-              "    });",
-              "} else {",
-              "    pm.test(`[${testCase}] validation error response`, function () {",
-              "        pm.expect(pm.response.code).to.be.within(400, 499);",
-              "    });",
-              "}"
-            ],
-            "type": "text/javascript"
-          }
-        }
-      ],
-      "request": {
-        "method": "PUT",
-        "header": [
-          { "key": "Content-Type", "value": "application/json" }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"photo\": \"{{profilePhoto}}\",\n  \"name\": \"{{profileName}}\",\n  \"lastName\": \"{{profileLastName}}\",\n  \"dateBirth\": \"{{profileDateBirth}}\",\n  \"country\": \"{{profileCountry}}\"\n}",
-          "options": { "raw": { "language": "json" } }
-        },
-        "url": {
-          "raw": "{{baseUrl}}/users/profile",
-          "host": [ "{{baseUrl}}" ],
-          "path": [ "users", "profile" ]
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "signup"
+          ]
         }
       },
       "response": []
@@ -185,45 +101,22 @@
       "script": {
         "type": "text/javascript",
         "exec": [
-          "// 1. Инициализация общих хелперов (DRY)",
+          "// Хелпер getParam вынесен на уровень коллекции (DRY)",
           "const data = pm.iterationData.toObject();",
           "pm.helpers = {",
-          "    getParam: (key, fallback = \"\") => Object.prototype.hasOwnProperty.call(data, key) ? data[key] : fallback,",
-          "    getRandomItem: (arr) => arr[Math.floor(Math.random() * arr.length)],",
-          "    getRandomName: () => pm.helpers.getRandomItem([\"Alexander\", \"Dmitry\", \"Maxim\", \"Artem\", \"Ivan\", \"Sophia\", \"Anna\"]),",
-          "    getRandomLastName: () => pm.helpers.getRandomItem([\"Melnyk\", \"Shevchenko\", \"Boyko\", \"Kovalenko\", \"Bondarenko\"])\n",
+          "    getParam: (key, fallback = \"\") => Object.prototype.hasOwnProperty.call(data, key) ? data[key] : fallback",
           "};",
           "",
-          "// 2. Установка baseUrl",
+          "// Динамическая подстановка baseUrl из файла данных",
           "const iterationBaseUrl = pm.iterationData.get(\"baseUrl\");",
           "if (iterationBaseUrl) {",
           "    pm.variables.set(\"baseUrl\", iterationBaseUrl);",
-          "}",
-          "",
-          "// 3. Централизованная фильтрация итераций по типам (main / register / profile)",
-          "const requestName = pm.info.requestName;",
-          "const currentType = data.type || \"main\";",
-          "",
-          "let shouldExecute = false;",
-          "if (currentType === \"register\" && requestName === \"register validation\") {",
-          "    shouldExecute = true;",
-          "} else if (currentType === \"profile\" && requestName === \"profile validation\") {",
-          "    shouldExecute = true;",
-          "} else if (currentType === \"main\" && requestName !== \"register validation\" && requestName !== \"profile validation\") {",
-          "    shouldExecute = true;",
-          "}",
-          "",
-          "if (!shouldExecute) {",
-          "    pm.execution.skipRequest();",
           "}"
         ]
       }
     }
   ],
   "variable": [
-    { "key": "baseUrl", "value": "" },
-    { "key": "userId", "value": "" },
-    { "key": "authToken", "value": "" },
-    { "key": "carId", "value": "" }
+    { "key": "baseUrl", "value": "" }
   ]
 }
