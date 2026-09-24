@@ -1,18 +1,7 @@
 [
   {
-    "type": "main",
-    "environment": "qauto",
-    "baseUrl": "https://qauto.forstudy.space/api"
-  },
-  {
-    "type": "main",
-    "environment": "qauto2",
-    "baseUrl": "https://qauto2.forstudy.space/api"
-  },
-  {
     "environment": "qauto",
     "baseUrl": "https://qauto.forstudy.space/api",
-    "type": "register",
     "case": "register_01_empty_name",
     "name": "",
     "lastName": "Test",
@@ -24,7 +13,6 @@
   {
     "environment": "qauto",
     "baseUrl": "https://qauto.forstudy.space/api",
-    "type": "register",
     "case": "register_02_one_char_name",
     "name": "A",
     "lastName": "Test",
@@ -36,7 +24,6 @@
   {
     "environment": "qauto",
     "baseUrl": "https://qauto.forstudy.space/api",
-    "type": "register",
     "case": "register_03_empty_lastName",
     "name": "Test",
     "lastName": "",
@@ -48,7 +35,6 @@
   {
     "environment": "qauto",
     "baseUrl": "https://qauto.forstudy.space/api",
-    "type": "register",
     "case": "register_04_one_char_lastName",
     "name": "Test",
     "lastName": "A",
@@ -60,7 +46,6 @@
   {
     "environment": "qauto",
     "baseUrl": "https://qauto.forstudy.space/api",
-    "type": "register",
     "case": "register_05_invalid_email",
     "name": "Test",
     "lastName": "User",
@@ -72,7 +57,6 @@
   {
     "environment": "qauto",
     "baseUrl": "https://qauto.forstudy.space/api",
-    "type": "register",
     "case": "register_06_empty_password",
     "name": "Test",
     "lastName": "User",
@@ -84,7 +68,6 @@
   {
     "environment": "qauto",
     "baseUrl": "https://qauto.forstudy.space/api",
-    "type": "register",
     "case": "register_07_short_password",
     "name": "Test",
     "lastName": "User",
@@ -96,7 +79,6 @@
   {
     "environment": "qauto",
     "baseUrl": "https://qauto.forstudy.space/api",
-    "type": "register",
     "case": "register_08_password_mismatch",
     "name": "Test",
     "lastName": "User",
@@ -108,7 +90,6 @@
   {
     "environment": "qauto",
     "baseUrl": "https://qauto.forstudy.space/api",
-    "type": "register",
     "case": "register_09_valid",
     "name": "Test",
     "lastName": "User",
@@ -120,7 +101,6 @@
   {
     "environment": "qauto2",
     "baseUrl": "https://qauto2.forstudy.space/api",
-    "type": "register",
     "case": "register_01_empty_name",
     "name": "",
     "lastName": "Test",
@@ -132,7 +112,6 @@
   {
     "environment": "qauto2",
     "baseUrl": "https://qauto2.forstudy.space/api",
-    "type": "register",
     "case": "register_02_one_char_name",
     "name": "A",
     "lastName": "Test",
@@ -144,7 +123,6 @@
   {
     "environment": "qauto2",
     "baseUrl": "https://qauto2.forstudy.space/api",
-    "type": "register",
     "case": "register_03_empty_lastName",
     "name": "Test",
     "lastName": "",
@@ -156,7 +134,6 @@
   {
     "environment": "qauto2",
     "baseUrl": "https://qauto2.forstudy.space/api",
-    "type": "register",
     "case": "register_04_one_char_lastName",
     "name": "Test",
     "lastName": "A",
@@ -168,7 +145,6 @@
   {
     "environment": "qauto2",
     "baseUrl": "https://qauto2.forstudy.space/api",
-    "type": "register",
     "case": "register_05_invalid_email",
     "name": "Test",
     "lastName": "User",
@@ -180,7 +156,6 @@
   {
     "environment": "qauto2",
     "baseUrl": "https://qauto2.forstudy.space/api",
-    "type": "register",
     "case": "register_06_empty_password",
     "name": "Test",
     "lastName": "User",
@@ -192,7 +167,6 @@
   {
     "environment": "qauto2",
     "baseUrl": "https://qauto2.forstudy.space/api",
-    "type": "register",
     "case": "register_07_short_password",
     "name": "Test",
     "lastName": "User",
@@ -204,7 +178,6 @@
   {
     "environment": "qauto2",
     "baseUrl": "https://qauto2.forstudy.space/api",
-    "type": "register",
     "case": "register_08_password_mismatch",
     "name": "Test",
     "lastName": "User",
@@ -216,7 +189,6 @@
   {
     "environment": "qauto2",
     "baseUrl": "https://qauto2.forstudy.space/api",
-    "type": "register",
     "case": "register_09_valid",
     "name": "Test",
     "lastName": "User",
@@ -224,245 +196,5 @@
     "password": "Password12345A",
     "repeatPassword": "Password12345A",
     "expectedStatus": 201
-  },
-  {
-    "environment": "qauto",
-    "baseUrl": "https://qauto.forstudy.space/api",
-    "type": "profile",
-    "case": "profile_01_empty_name",
-    "name": "",
-    "lastName": "Test",
-    "country": "Ukraine",
-    "dateBirth": "1995-05-15",
-    "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
-    "expectedStatus": 400
-  },
-  {
-    "environment": "qauto",
-    "baseUrl": "https://qauto.forstudy.space/api",
-    "type": "profile",
-    "case": "profile_02_one_char_name",
-    "name": "A",
-    "lastName": "Test",
-    "country": "Ukraine",
-    "dateBirth": "1995-05-15",
-    "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
-    "expectedStatus": 400
-  },
-  {
-    "environment": "qauto",
-    "baseUrl": "https://qauto.forstudy.space/api",
-    "type": "profile",
-    "case": "profile_03_empty_lastName",
-    "name": "Test",
-    "lastName": "",
-    "country": "Ukraine",
-    "dateBirth": "1995-05-15",
-    "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
-    "expectedStatus": 400
-  },
-  {
-    "environment": "qauto",
-    "baseUrl": "https://qauto.forstudy.space/api",
-    "type": "profile",
-    "case": "profile_04_one_char_lastName",
-    "name": "Test",
-    "lastName": "A",
-    "country": "Ukraine",
-    "dateBirth": "1995-05-15",
-    "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
-    "expectedStatus": 400
-  },
-  {
-    "environment": "qauto",
-    "baseUrl": "https://qauto.forstudy.space/api",
-    "type": "profile",
-    "case": "profile_05_empty_country",
-    "name": "Test",
-    "lastName": "User",
-    "country": "",
-    "dateBirth": "1995-05-15",
-    "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
-    "expectedStatus": 400
-  },
-  {
-    "environment": "qauto",
-    "baseUrl": "https://qauto.forstudy.space/api",
-    "type": "profile",
-    "case": "profile_06_invalid_date",
-    "name": "Test",
-    "lastName": "User",
-    "country": "Ukraine",
-    "dateBirth": "invalid",
-    "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
-    "expectedStatus": 400
-  },
-  {
-    "environment": "qauto",
-    "baseUrl": "https://qauto.forstudy.space/api",
-    "type": "profile",
-    "case": "profile_07_empty_date",
-    "name": "Test",
-    "lastName": "User",
-    "country": "Ukraine",
-    "dateBirth": "",
-    "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
-    "expectedStatus": 400
-  },
-  {
-    "environment": "qauto",
-    "baseUrl": "https://qauto.forstudy.space/api",
-    "type": "profile",
-    "case": "profile_08_future_date",
-    "name": "Test",
-    "lastName": "User",
-    "country": "Ukraine",
-    "dateBirth": "2035-01-01",
-    "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
-    "expectedStatus": 400
-  },
-  {
-    "environment": "qauto",
-    "baseUrl": "https://qauto.forstudy.space/api",
-    "type": "profile",
-    "case": "profile_09_short_values",
-    "name": "A",
-    "lastName": "B",
-    "country": "U",
-    "dateBirth": "1995-05-15",
-    "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
-    "expectedStatus": 400
-  },
-  {
-    "environment": "qauto",
-    "baseUrl": "https://qauto.forstudy.space/api",
-    "type": "profile",
-    "case": "profile_10_valid",
-    "name": "John",
-    "lastName": "Smith",
-    "country": "Ukraine",
-    "dateBirth": "1995-05-15",
-    "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
-    "expectedStatus": 200
-  },
-  {
-    "environment": "qauto2",
-    "baseUrl": "https://qauto2.forstudy.space/api",
-    "type": "profile",
-    "case": "profile_01_empty_name",
-    "name": "",
-    "lastName": "Test",
-    "country": "Ukraine",
-    "dateBirth": "1995-05-15",
-    "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
-    "expectedStatus": 400
-  },
-  {
-    "environment": "qauto2",
-    "baseUrl": "https://qauto2.forstudy.space/api",
-    "type": "profile",
-    "case": "profile_02_one_char_name",
-    "name": "A",
-    "lastName": "Test",
-    "country": "Ukraine",
-    "dateBirth": "1995-05-15",
-    "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
-    "expectedStatus": 400
-  },
-  {
-    "environment": "qauto2",
-    "baseUrl": "https://qauto2.forstudy.space/api",
-    "type": "profile",
-    "case": "profile_03_empty_lastName",
-    "name": "Test",
-    "lastName": "",
-    "country": "Ukraine",
-    "dateBirth": "1995-05-15",
-    "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
-    "expectedStatus": 400
-  },
-  {
-    "environment": "qauto2",
-    "baseUrl": "https://qauto2.forstudy.space/api",
-    "type": "profile",
-    "case": "profile_04_one_char_lastName",
-    "name": "Test",
-    "lastName": "A",
-    "country": "Ukraine",
-    "dateBirth": "1995-05-15",
-    "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
-    "expectedStatus": 400
-  },
-  {
-    "environment": "qauto2",
-    "baseUrl": "https://qauto2.forstudy.space/api",
-    "type": "profile",
-    "case": "profile_05_empty_country",
-    "name": "Test",
-    "lastName": "User",
-    "country": "",
-    "dateBirth": "1995-05-15",
-    "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
-    "expectedStatus": 400
-  },
-  {
-    "environment": "qauto2",
-    "baseUrl": "https://qauto2.forstudy.space/api",
-    "type": "profile",
-    "case": "profile_06_invalid_date",
-    "name": "Test",
-    "lastName": "User",
-    "country": "Ukraine",
-    "dateBirth": "invalid",
-    "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
-    "expectedStatus": 400
-  },
-  {
-    "environment": "qauto2",
-    "baseUrl": "https://qauto2.forstudy.space/api",
-    "type": "profile",
-    "case": "profile_07_empty_date",
-    "name": "Test",
-    "lastName": "User",
-    "country": "Ukraine",
-    "dateBirth": "",
-    "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
-    "expectedStatus": 400
-  },
-  {
-    "environment": "qauto2",
-    "baseUrl": "https://qauto2.forstudy.space/api",
-    "type": "profile",
-    "case": "profile_08_future_date",
-    "name": "Test",
-    "lastName": "User",
-    "country": "Ukraine",
-    "dateBirth": "2035-01-01",
-    "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
-    "expectedStatus": 400
-  },
-  {
-    "environment": "qauto2",
-    "baseUrl": "https://qauto2.forstudy.space/api",
-    "type": "profile",
-    "case": "profile_09_short_values",
-    "name": "A",
-    "lastName": "B",
-    "country": "U",
-    "dateBirth": "1995-05-15",
-    "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
-    "expectedStatus": 400
-  },
-  {
-    "environment": "qauto2",
-    "baseUrl": "https://qauto2.forstudy.space/api",
-    "type": "profile",
-    "case": "profile_10_valid",
-    "name": "John",
-    "lastName": "Smith",
-    "country": "Ukraine",
-    "dateBirth": "1995-05-15",
-    "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
-    "expectedStatus": 200
   }
 ]
