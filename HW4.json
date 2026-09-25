@@ -13,19 +13,24 @@
           "listen": "prerequest",
           "script": {
             "exec": [
-              "pm.variables.set(\"testName\", pm.helpers.getParam(\"name\"));",
-              "pm.variables.set(\"testLastName\", pm.helpers.getParam(\"lastName\"));",
+              "function getParam(key, fallback = \"\") {",
+              "    var val = pm.iterationData.get(key);",
+              "    return (val !== undefined && val !== null) ? val : fallback;",
+              "}",
               "",
-              "let rawEmail = pm.helpers.getParam(\"email\");",
-              "let emailToSend = (rawEmail && rawEmail.trim() !== \"\") ",
+              "pm.variables.set(\"testName\", getParam(\"name\"));",
+              "pm.variables.set(\"testLastName\", getParam(\"lastName\"));",
+              "",
+              "var rawEmail = getParam(\"email\");",
+              "var emailToSend = (typeof rawEmail === 'string' && rawEmail.trim() !== \"\") ",
               "    ? rawEmail ",
               "    : `auto_user_${pm.info.iteration}_${Date.now()}@test.com`;",
               "",
               "pm.variables.set(\"testEmail\", emailToSend);",
-              "pm.variables.set(\"testPassword\", pm.helpers.getParam(\"password\"));",
-              "pm.variables.set(\"testRepeatPassword\", pm.helpers.getParam(\"repeatPassword\"));",
+              "pm.variables.set(\"testPassword\", getParam(\"password\"));",
+              "pm.variables.set(\"testRepeatPassword\", getParam(\"repeatPassword\"));",
               "",
-              "const expectedStatus = Number(pm.helpers.getParam(\"expectedStatus\", 201));",
+              "var expectedStatus = Number(getParam(\"expectedStatus\", 201));",
               "pm.variables.set(\"expectedStatus\", Number.isFinite(expectedStatus) ? expectedStatus : 201);"
             ],
             "type": "text/javascript"
@@ -101,14 +106,7 @@
       "script": {
         "type": "text/javascript",
         "exec": [
-          "// Хелпер getParam вынесен на уровень коллекции (DRY)",
-          "const data = pm.iterationData.toObject();",
-          "pm.helpers = {",
-          "    getParam: (key, fallback = \"\") => Object.prototype.hasOwnProperty.call(data, key) ? data[key] : fallback",
-          "};",
-          "",
-          "// Динамическая подстановка baseUrl из файла данных",
-          "const iterationBaseUrl = pm.iterationData.get(\"baseUrl\");",
+          "var iterationBaseUrl = pm.iterationData.get(\"baseUrl\");",
           "if (iterationBaseUrl) {",
           "    pm.variables.set(\"baseUrl\", iterationBaseUrl);",
           "}"
@@ -117,6 +115,9 @@
     }
   ],
   "variable": [
-    { "key": "baseUrl", "value": "" }
+    {
+      "key": "baseUrl",
+      "value": ""
+    }
   ]
 }
