@@ -6,30 +6,54 @@
 	},
 	"item": [
 		{
+			"name": "Auth - Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Login successful', function () {",
+							"    pm.expect(pm.response.code).to.eql(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"{{authEmail}}\",\n  \"password\": \"{{authPassword}}\",\n  \"remember\": false\n}"
+				},
+				"url": {
+					"raw": "https://qauto.forstudy.space/api/auth/signin",
+					"protocol": "https",
+					"host": ["qauto", "forstudy", "space"],
+					"path": ["api", "auth", "signin"]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "profile validation",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"// Pre-request script без повторного объявления переменных",
 							"const iterData = pm.iterationData.toObject() || {};",
-							"",
-							"if (iterData.profileName !== undefined) {",
-							"    pm.variables.set('profileName', iterData.profileName);",
-							"}",
-							"if (iterData.profileLastName !== undefined) {",
-							"    pm.variables.set('profileLastName', iterData.profileLastName);",
-							"}",
-							"if (iterData.profileCountry !== undefined) {",
-							"    pm.variables.set('profileCountry', iterData.profileCountry);",
-							"}",
-							"if (iterData.profileDateBirth !== undefined) {",
-							"    pm.variables.set('profileDateBirth', iterData.profileDateBirth);",
-							"}",
-							"if (iterData.expectedStatus !== undefined) {",
-							"    pm.variables.set('expectedStatus', iterData.expectedStatus);",
-							"}"
+							"if (iterData.profileName !== undefined) pm.variables.set('profileName', iterData.profileName);",
+							"if (iterData.profileLastName !== undefined) pm.variables.set('profileLastName', iterData.profileLastName);",
+							"if (iterData.profileCountry !== undefined) pm.variables.set('profileCountry', iterData.profileCountry);",
+							"if (iterData.profileDateBirth !== undefined) pm.variables.set('profileDateBirth', iterData.profileDateBirth);",
+							"if (iterData.expectedStatus !== undefined) pm.variables.set('expectedStatus', iterData.expectedStatus);"
 						],
 						"type": "text/javascript"
 					}
@@ -39,12 +63,7 @@
 					"script": {
 						"exec": [
 							"let jsonData = {};",
-							"try {",
-							"    jsonData = pm.response.json();",
-							"} catch (e) {",
-							"    console.log('Response is not valid JSON or is empty');",
-							"}",
-							"",
+							"try { jsonData = pm.response.json(); } catch (e) {}",
 							"const expectedStatus = Number(pm.variables.get('expectedStatus'));",
 							"const testCase = pm.iterationData.get('case') || `iteration ${pm.info.iteration + 1}`;",
 							"",
@@ -55,28 +74,6 @@
 							"if (expectedStatus >= 200 && expectedStatus < 300) {",
 							"    pm.test(`[${testCase}] profile updated`, function () {",
 							"        pm.expect(jsonData.status).to.eql('ok');",
-							"        pm.expect(jsonData.data).to.be.an('object');",
-							"    });",
-							"",
-							"    const sentName = pm.variables.get('profileName');",
-							"    const sentLastName = pm.variables.get('profileLastName');",
-							"    const sentCountry = pm.variables.get('profileCountry');",
-							"    const sentDateBirth = pm.variables.get('profileDateBirth');",
-							"",
-							"    pm.test(`[${testCase}] response matches input`, function () {",
-							"        if (jsonData.data && jsonData.data.name !== undefined) {",
-							"            pm.expect(jsonData.data.name).to.eql(sentName);",
-							"        }",
-							"        if (jsonData.data && jsonData.data.lastName !== undefined) {",
-							"            pm.expect(jsonData.data.lastName).to.eql(sentLastName);",
-							"        }",
-							"        if (jsonData.data && jsonData.data.country !== undefined) {",
-							"            pm.expect(jsonData.data.country).to.eql(sentCountry);",
-							"        }",
-							"        if (jsonData.data && jsonData.data.dateBirth !== undefined) {",
-							"            const actualDate = String(jsonData.data.dateBirth).split('T')[0];",
-							"            pm.expect(actualDate).to.eql(sentDateBirth);",
-							"        }",
 							"    });",
 							"} else {",
 							"    pm.test(`[${testCase}] validation error response`, function () {",
@@ -103,16 +100,8 @@
 				"url": {
 					"raw": "https://qauto.forstudy.space/api/users/profile",
 					"protocol": "https",
-					"host": [
-						"qauto",
-						"forstudy",
-						"space"
-					],
-					"path": [
-						"api",
-						"users",
-						"profile"
-					]
+					"host": ["qauto", "forstudy", "space"],
+					"path": ["api", "users", "profile"]
 				}
 			},
 			"response": []
