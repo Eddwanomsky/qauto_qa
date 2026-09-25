@@ -1,177 +1,121 @@
 {
-  "info": {
-    "_postman_id": "02375ee3-8586-4c4e-a5af-7a55ba09bd60",
-    "name": "HW3",
-    "description": "Оптимізована Data Driven Postman collection для qauto та qauto2. Один файл iteration data містить кейси для обох середовищ. baseUrl береться з pm.iterationData, тому колекція послідовно проходить qauto, а потім qauto2 в межах одного Run manually.",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "25724350",
-    "_collection_link": "https://go.postman.co/collection/25724350-02375ee3-8586-4c4e-a5af-7a55ba09bd60?source=collection_link"
-  },
-  "item": [
-    {
-      "name": "profile validation",
-      "event": [
-        {
-          "listen": "prerequest",
-          "script": {
-            "exec": [
-              "const data = pm.iterationData.toObject();",
-              "",
-              "if (data.type !== \"profile\") {",
-              "    pm.execution.skipRequest();",
-              "}",
-              "",
-              "const value = (key, fallback = \"\") =>",
-              "    Object.prototype.hasOwnProperty.call(data, key) ? data[key] : fallback;",
-              "",
-              "pm.variables.set(\"baseUrl\", value(\"baseUrl\", pm.environment.get(\"baseUrl\") || \"\"));",
-              "pm.variables.set(\"profileName\", value(\"name\", \"John\"));",
-              "pm.variables.set(\"profileLastName\", value(\"lastName\", \"Smith\"));",
-              "pm.variables.set(\"profileCountry\", value(\"country\", \"Ukraine\"));",
-              "pm.variables.set(\"profileDateBirth\", value(\"dateBirth\", \"1995-05-15\"));",
-              "pm.variables.set(\"profilePhoto\", value(\"photo\", \"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=\"));",
-              "",
-              "const expectedStatus = Number(value(\"expectedStatus\", 200));",
-              "pm.variables.set(\"expectedStatus\", Number.isFinite(expectedStatus) ? expectedStatus : 200);"
-            ],
-            "type": "text/javascript"
-          }
-        },
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "",
-              "let jsonData = {};",
-              "try {",
-              "    jsonData = pm.response.json();",
-              "} catch (e) {",
-              "    console.log(\"Response is not valid JSON or is empty\");",
-              "}",
-              "",
-              "let jsonData = {};",
-              "try {",
-              "    jsonData = pm.response.json();",
-              "} catch (e) {",
-              "    console.log(\"Response is not valid JSON or is empty\");",
-              "}",
-              "",
-              "const expectedStatus = Number(pm.variables.get(\"expectedStatus\"));",
-              "const testCase = pm.iterationData.get(\"case\") || `iteration ${pm.info.iteration + 1}`;",
-              "",
-              "pm.test(`[${testCase}] expected status`, function () {",
-              "    pm.expect(pm.response.code).to.eql(expectedStatus);",
-              "});",
-              "",
-              "if (expectedStatus >= 200 && expectedStatus < 300) {",
-              "    pm.test(`[${testCase}] profile updated`, function () {",
-              "        pm.expect(jsonData.status).to.eql(\"ok\");",
-              "        pm.expect(jsonData.data).to.be.an(\"object\");",
-              "    });",
-              "",
-              "    const sentName = pm.variables.get(\"profileName\");",
-              "    const sentLastName = pm.variables.get(\"profileLastName\");",
-              "    const sentCountry = pm.variables.get(\"profileCountry\");",
-              "    const sentDateBirth = pm.variables.get(\"profileDateBirth\");",
-              "",
-              "    pm.test(`[${testCase}] response matches input`, function () {",
-              "        if (jsonData.data.name !== undefined) {",
-              "            pm.expect(jsonData.data.name).to.eql(sentName);",
-              "        }",
-              "        if (jsonData.data.lastName !== undefined) {",
-              "            pm.expect(jsonData.data.lastName).to.eql(sentLastName);",
-              "        }",
-              "        if (jsonData.data.country !== undefined) {",
-              "            pm.expect(jsonData.data.country).to.eql(sentCountry);",
-              "        }",
-              "        if (jsonData.data.dateBirth !== undefined) {",
-              "            const actualDate = String(jsonData.data.dateBirth).split(\"T\")[0];",
-              "            pm.expect(actualDate).to.eql(sentDateBirth);",
-              "        }",
-              "    });",
-              "} else {",
-              "    pm.test(`[${testCase}] validation error response`, function () {",
-              "        pm.expect(pm.response.code).to.be.within(400, 499);",
-              "    });",
-              "}"
-            ],
-            "type": "text/javascript"
-          }
-        }
-      ],
-      "request": {
-        "method": "PUT",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"photo\": \"{{profilePhoto}}\",\n  \"name\": \"{{profileName}}\",\n  \"lastName\": \"{{profileLastName}}\",\n  \"dateBirth\": \"{{profileDateBirth}}\",\n  \"country\": \"{{profileCountry}}\"\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "{{baseUrl}}/users/profile",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "users",
-            "profile"
-          ]
-        }
-      },
-      "response": []
-    }
-  ],
-  "event": [
-    {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "requests": {},
-        "exec": [
-          "const iterationBaseUrl = pm.iterationData.get(\"baseUrl\");",
-          "if (iterationBaseUrl) {",
-          "    pm.variables.set(\"baseUrl\", iterationBaseUrl);",
-          "}"
-        ]
-      }
-    },
-    {
-      "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "packages": {},
-        "requests": {},
-        "exec": [
-          ""
-        ]
-      }
-    }
-  ],
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": ""
-    },
-    {
-      "key": "userId",
-      "value": ""
-    },
-    {
-      "key": "authToken",
-      "value": ""
-    },
-    {
-      "key": "carId",
-      "value": ""
-    }
-  ]
+	"info": {
+		"_postman_id": "c1f2e3d4-a5b6-7c8d-9e0f-1a2b3c4d5e6f",
+		"name": "HW3",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "profile validation",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Pre-request script без повторного объявления переменных",
+							"const iterData = pm.iterationData.toObject() || {};",
+							"",
+							"if (iterData.profileName !== undefined) {",
+							"    pm.variables.set('profileName', iterData.profileName);",
+							"}",
+							"if (iterData.profileLastName !== undefined) {",
+							"    pm.variables.set('profileLastName', iterData.profileLastName);",
+							"}",
+							"if (iterData.profileCountry !== undefined) {",
+							"    pm.variables.set('profileCountry', iterData.profileCountry);",
+							"}",
+							"if (iterData.profileDateBirth !== undefined) {",
+							"    pm.variables.set('profileDateBirth', iterData.profileDateBirth);",
+							"}",
+							"if (iterData.expectedStatus !== undefined) {",
+							"    pm.variables.set('expectedStatus', iterData.expectedStatus);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = {};",
+							"try {",
+							"    jsonData = pm.response.json();",
+							"} catch (e) {",
+							"    console.log('Response is not valid JSON or is empty');",
+							"}",
+							"",
+							"const expectedStatus = Number(pm.variables.get('expectedStatus'));",
+							"const testCase = pm.iterationData.get('case') || `iteration ${pm.info.iteration + 1}`;",
+							"",
+							"pm.test(`[${testCase}] expected status`, function () {",
+							"    pm.expect(pm.response.code).to.eql(expectedStatus);",
+							"});",
+							"",
+							"if (expectedStatus >= 200 && expectedStatus < 300) {",
+							"    pm.test(`[${testCase}] profile updated`, function () {",
+							"        pm.expect(jsonData.status).to.eql('ok');",
+							"        pm.expect(jsonData.data).to.be.an('object');",
+							"    });",
+							"",
+							"    const sentName = pm.variables.get('profileName');",
+							"    const sentLastName = pm.variables.get('profileLastName');",
+							"    const sentCountry = pm.variables.get('profileCountry');",
+							"    const sentDateBirth = pm.variables.get('profileDateBirth');",
+							"",
+							"    pm.test(`[${testCase}] response matches input`, function () {",
+							"        if (jsonData.data && jsonData.data.name !== undefined) {",
+							"            pm.expect(jsonData.data.name).to.eql(sentName);",
+							"        }",
+							"        if (jsonData.data && jsonData.data.lastName !== undefined) {",
+							"            pm.expect(jsonData.data.lastName).to.eql(sentLastName);",
+							"        }",
+							"        if (jsonData.data && jsonData.data.country !== undefined) {",
+							"            pm.expect(jsonData.data.country).to.eql(sentCountry);",
+							"        }",
+							"        if (jsonData.data && jsonData.data.dateBirth !== undefined) {",
+							"            const actualDate = String(jsonData.data.dateBirth).split('T')[0];",
+							"            pm.expect(actualDate).to.eql(sentDateBirth);",
+							"        }",
+							"    });",
+							"} else {",
+							"    pm.test(`[${testCase}] validation error response`, function () {",
+							"        pm.expect(pm.response.code).to.be.within(400, 499);",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"{{profileName}}\",\n  \"lastName\": \"{{profileLastName}}\",\n  \"country\": \"{{profileCountry}}\",\n  \"dateBirth\": \"{{profileDateBirth}}\"\n}"
+				},
+				"url": {
+					"raw": "https://qauto.forstudy.space/api/users/profile",
+					"protocol": "https",
+					"host": [
+						"qauto",
+						"forstudy",
+						"space"
+					],
+					"path": [
+						"api",
+						"users",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		}
+	]
 }
